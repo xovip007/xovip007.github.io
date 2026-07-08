@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加密解密 - MyBrand导航站</title>
+    <style>
+        /* 导航栏样式和tvbox.html完全一致，省略重复部分 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        header {
+            background-color: #2c3e50;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: #3498db;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-menu li a {
+            color: #ecf0f1;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu li a.active {
+            color: #3498db;
+        }
+
+        .nav-menu li a::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #3498db;
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu li a:hover::after,
+        .nav-menu li a.active::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: #ffffff;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                background-color: #2c3e50;
+                width: 100%;
+                height: calc(100vh - 70px);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 40px;
+                transition: right 0.3s ease;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -6px);
+            }
+        }
+
+        /* 内容区域 */
+        .content {
+            margin-top: 100px;
+            padding: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* Base64加密解密专属样式 */
+        .bs64-tool {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .bs64-tool h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .bs64-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bs64-btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bs64-btn {
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .bs64-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .bs64-input, .bs64-output {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .bs64-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="index.html" class="logo">MyBrand</a>
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="tvbox.html">tvbox编辑器</a></li>
+                <li><a href="bs64.html" class="active">加密解密</a></li>
+                <li><a href="yasuo.html">图片压缩</a></li>
+                <li><a href="index.html#contact">联系</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Base64加密解密内容区域 -->
+    <div class="content">
+        <div class="bs64-tool">
+            <h2>Base64 加密/解密工具</h2>
+            <div class="bs64-container">
+                <div>
+                    <label class="bs64-label">输入内容：</label>
+                    <textarea class="bs64-input" id="bs64Input" placeholder="请输入需要加密/解密的文本..."></textarea>
+                </div>
+                <div class="bs64-btn-group">
+                    <button class="bs64-btn" id="encodeBtn">加密 (Base64)</button>
+                    <button class="bs64-btn" id="decodeBtn">解密 (Base64)</button>
+                    <button class="bs64-btn" id="clearBtn">清空内容</button>
+                </div>
+                <div>
+                    <label class="bs64-label">输出结果：</label>
+                    <textarea class="bs64-output" id="bs64Output" readonly placeholder="加密/解密结果将显示在这里..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 导航栏交互逻辑
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        const navLinks = document.querySelectorAll('.nav-menu li a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Base64核心功能实现
+        const input = document.getElementById('bs64Input');
+        const output = document.getElementById('bs64Output');
+        const encodeBtn = document.getElementById('encodeBtn');
+        const decodeBtn = document.getElementById('decodeBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        // 加密功能
+        encodeBtn.addEventListener('click', () => {
+            if (!input.value) {
+                alert('请输入需要加密的内容！');
+                return;
+            }
+            try {
+                const encoded = btoa(unescape(encodeURIComponent(input.value)));
+                output.value = encoded;
+            } catch (e) {
+                output.value = '加密失败：' + e.message;
+            }
+        });
+
+        // 解密功能
+        decodeBtn.addEventListener('click', () => {
+            if (!input.value) {
+                alert('请输入需要解密的内容！');
+                return;
+            }
+            try {
+                const decoded = decodeURIComponent(escape(atob(input.value)));
+                output.value = decoded;
+            } catch (e) {
+                output.value = '解密失败：请确认输入的是有效的Base64编码！';
+            }
+        });
+
+        // 清空功能
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            output.value = '';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TVBox编辑器 - MyBrand导航站</title>
+    <!-- 导航栏样式 -->
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        /* 导航栏容器 */
+        header {
+            background-color: #2c3e50;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        /* Logo 样式 */
+        .logo {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: #3498db;
+        }
+
+        /* 导航菜单 */
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-menu li a {
+            color: #ecf0f1;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* 当前页面激活状态 */
+        .nav-menu li a.active {
+            color: #3498db;
+        }
+
+        /* 下划线动画 */
+        .nav-menu li a::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #3498db;
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu li a:hover::after,
+        .nav-menu li a.active::after {
+            width: 100%;
+        }
+
+        /* 汉堡菜单（移动端） */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: #ffffff;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                background-color: #2c3e50;
+                width: 100%;
+                height: calc(100vh - 70px);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 40px;
+                transition: right 0.3s ease;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -6px);
+            }
+        }
+
+        /* 内容区域 - 适配编辑器 */
+        .content {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: calc(100vh - 80px);
+        }
+    </style>
+    <!-- 编辑器相关样式 -->
+    <link rel="stylesheet" href="./lib/bootstrap@3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./lib/animate.css@3.2.4/animate.min.css">
+    <link rel="stylesheet" href="./static/editor.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="navbar">
+            <a href="index.html" class="logo">MyBrand</a>
+            
+            <!-- 汉堡菜单按钮 -->
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <!-- 导航菜单 - 当前页面active -->
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="tvbox.html" class="active">tvbox编辑器</a></li>
+                <li><a href="bs64.html">加密解密</a></li>
+                <li><a href="yasuo.html">图片压缩</a></li>
+                <li><a href="index.html#contact">联系</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- TVBox编辑器核心内容 -->
+    <div class="content">
+        <div id="loading"
+             style="position: absolute; top: 0; bottom: 0; left: 0; right: 0; background-color: #000; opacity: 0.5; z-index:9999;">
+            <center style="position: absolute; top: 50%; left: 50%; color:#fff">请稍候...</center>
+        </div>
+        <div class="container">
+            <div class="page-header">
+                <h3>
+                    配置编辑器 &nbsp;<small>本地记录依赖浏览器缓存，清空缓存将丢失记录</small><img src="./static/gh_16e4613251a6_258.jpg" style="width:150px;height:150px;position:absolute; top:10px; right:10px">
+                </h3>
+            </div>
+            <div class="row">
+                <div class="btn-group btn-group-sm col-md-5" role="group">
+                    <button type="button" class="btn btn-success" onclick="show_visual('999999')">可视</button>
+                    <button type="button" class="btn btn-info" onclick="show_code('999999')">源码</button>
+                    <button type="button" class="btn btn-warning" onclick="empty_diy('999999')">清空</button>
+                    <button type="button" class="btn btn-primary" onclick="save_diy('999999')">保存</button>
+                </div>
+                <div class="col-md-5">
+                    <label class="btn btn-primary btn-sm">
+                        配置转图片 <input type="file" onchange="toImg(event)" style="display: none;">
+                    </label>
+
+                    <label class="btn btn-primary btn-sm">
+                        图片转配置代码 <input type="file" onchange="imgToStr(event)" style="display: none;">
+                    </label>
+                    <label class="btn btn-primary btn-sm">
+                        上传加密文件进行解密 <input type="file" onchange="decrypt(event)" style="display: none;">
+                    </label>
+                </div>
+                <div class="col-md-2">
+                    <a href="./cat_ext/index.html" class="btn btn-info btn-sm" style="margin-right: 10px;">配置代码加解密</a>
+                </div>
+            </div>
+            <h4></h4>
+            <form id="diy_cfg_jf_999999" style="display: none;"></form>
+            <textarea rows="30" class="form-control" id="diy_cfg_code_999999" style="margin-top: 10px; display: none;"></textarea>    
+        </div>
+    </div>
+
+    <!-- 导航栏交互脚本 -->
+    <script>
+        // 导航栏交互逻辑
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        const navLinks = document.querySelectorAll('.nav-menu li a');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
+
+    <!-- 编辑器相关脚本 -->
+    <script src="./lib/jquery@3.6.0/jquery.min.js"></script>
+    <script src="./lib/bootstrap@3.4.1/js/bootstrap.min.js"></script>
+    <script src="./lib/bootstrap-notify@3.1.3/bootstrap-notify.min.js"></script>
+    <script src="./lib/bootbox@4.4.0/bootbox.min.js"></script>
+    <script src="./static/index.js"></script>
+    <script src="./lib/underscore@1.13.1/underscore-min.js"></script>
+    <script src="./lib/jquery-ui-dist@1.12.1/jquery-ui.min.js"></script>
+    <script src="./lib/CryptoJS/core-min.js"></script>
+    <script src="./lib/CryptoJS/enc-base64-min.js"></script>
+    <script src="./lib/CryptoJS/cipher-core-min.js"></script>
+    <script src="./lib/CryptoJS/aes-min.js"></script>
+    <script src="./lib/CryptoJS/mode-ecb-min.js"></script>
+    <script src="./lib/clipboard@2.0.8/clipboard.min.js"></script>
+    <script src="./static/jsonform.js"></script>
+    <script src="./static/jsv.js"></script>
+    <script src="./static/editor.js"></script>
+    <script src="./static/editor-ex.js"></script>
+    <script src="./static/jsonlint.js"></script>
+</body>
+</html>
